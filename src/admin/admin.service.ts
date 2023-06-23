@@ -70,8 +70,6 @@ export class AdminService {
     if (!adminByLogin) {
       throw new UnauthorizedException('Login or password is wrong');
     }
-    console.log(authDto, adminByLogin.hashed_password);
-
     const isMatchPass = await bcrypt.compare(
       password,
       adminByLogin.hashed_password,

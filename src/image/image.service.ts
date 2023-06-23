@@ -63,7 +63,7 @@ export class ImageService {
 
       for (let i = 0; i < images.length; i++) {
         const fileName = (await this.generateUniqueFileName()) + '.jpg';
-        const filePath = path.resolve(__dirname, '..', 'static');
+        const filePath = path.resolve(__dirname, '..', '..', 'static');
         if (!fs.existsSync(filePath)) {
           fs.mkdirSync(filePath, { recursive: true });
         }
@@ -82,7 +82,7 @@ export class ImageService {
   }
 
   getImage(imageName: string, res: Response) {
-    const imagePath = path.join(__dirname, '..', 'static', imageName);
+    const imagePath = path.join(__dirname, '..', '..', 'static', imageName);
     if (!fs.existsSync(imagePath)) {
       throw new HttpException('Image not found', HttpStatus.NOT_FOUND);
     }
@@ -91,7 +91,7 @@ export class ImageService {
 
   async removeFile(fileName: string) {
     try {
-      const filePath = path.resolve(__dirname, '..', 'static');
+      const filePath = path.resolve(__dirname, '..', '..', 'static');
       if (!fs.existsSync(filePath)) {
         fs.mkdirSync(filePath, { recursive: true });
       }

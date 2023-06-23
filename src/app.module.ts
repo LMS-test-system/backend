@@ -39,7 +39,7 @@ import { ResultAnswer } from './result_answer/models/result_answer.model';
       isGlobal: true,
     }),
     ServeStaticModule.forRoot({
-      rootPath: resolve(__dirname, 'static'),
+      rootPath: resolve(__dirname, '..', 'static'),
     }),
     SequelizeModule.forRoot({
       dialect: 'postgres',
