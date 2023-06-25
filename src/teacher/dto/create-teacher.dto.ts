@@ -31,4 +31,8 @@ export class CreateTeacherDto {
   @IsNotEmpty()
   @IsStrongPassword()
   password: string;
+
+  @IsNotEmpty()
+  @IsString()
+  role_id: string;
 }

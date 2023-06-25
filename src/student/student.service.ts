@@ -18,12 +18,16 @@ import { AuthDto } from './dto/auth.dto';
 import { Image } from '../image/models/image.model';
 import { Group } from '../group/models/group.model';
 import { UpdateGroupDto } from './dto/update-group.dto';
+import { UpdateRoleDto } from './dto/update-role.dto';
+import { RoleService } from '../role/role.service';
+import { Role } from '../role/models/role.model';
 
 @Injectable()
 export class StudentService {
   constructor(
     @InjectModel(Student) private studentRepository: typeof Student,
     private readonly groupService: GroupService,
+    private readonly roleService: RoleService,
     private readonly imageService: ImageService,
     private readonly jwtService: JwtService,
   ) {}
@@ -66,6 +70,7 @@ export class StudentService {
   ) {
     await this.isSuperAdmin(authHeader);
     await this.groupService.getOne(createStudentDto.group_id);
+    await this.roleService.findOne(createStudentDto.role_id);
     const uploadedImages = await this.imageService.create(images);
     const studentByLogin = await this.getStudentByLogin(createStudentDto.login);
     if (studentByLogin) {
@@ -91,31 +96,16 @@ export class StudentService {
         'phone',
         'telegram',
         'group_id',
+        'role_id',
         'image_id',
       ],
-      include: [Group, Image],
+      include: [Group, Role, Image],
     });
   }
 
   async findOne(id: string, authHeader: string) {
     await this.isUserSelf(id, authHeader);
-    const student = await this.studentRepository.findOne({
-      where: { id },
-      attributes: [
-        'id',
-        'full_name',
-        'email',
-        'phone',
-        'telegram',
-        'group_id',
-        'image_id',
-      ],
-      include: [Group, Image],
-    });
-    if (!student) {
-      throw new HttpException('Student not found', HttpStatus.NOT_FOUND);
-    }
-    return student;
+    return this.getOne(id);
   }
 
   async update(
@@ -168,6 +158,18 @@ export class StudentService {
     await this.getOne(id);
     await this.groupService.getOne(updateGroupDto.group_id);
     await this.studentRepository.update(updateGroupDto, { where: { id } });
+    return this.getOne(id);
+  }
+
+  async updateRole(
+    id: string,
+    updateRoleDto: UpdateRoleDto,
+    authHeader: string,
+  ) {
+    await this.isSuperAdmin(authHeader);
+    await this.getOne(id);
+    await this.roleService.findOne(updateRoleDto.role_id);
+    await this.studentRepository.update(updateRoleDto, { where: { id } });
     return this.getOne(id);
   }
 
@@ -226,9 +228,10 @@ export class StudentService {
         'login',
         'hashed_password',
         'group_id',
+        'role_id',
         'image_id',
       ],
-      include: [Group, Image],
+      include: [Group, Role, Image],
     });
     return student;
   }
@@ -243,9 +246,10 @@ export class StudentService {
         'phone',
         'telegram',
         'group_id',
+        'role_id',
         'image_id',
       ],
-      include: [Group, Image],
+      include: [Group, Role, Image],
     });
     if (!student) {
       throw new HttpException('Student not found', HttpStatus.NOT_FOUND);

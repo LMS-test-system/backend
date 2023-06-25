@@ -35,4 +35,8 @@ export class CreateStudentDto {
   @IsNotEmpty()
   @IsString()
   group_id: string;
+
+  @IsNotEmpty()
+  @IsString()
+  role_id: string;
 }

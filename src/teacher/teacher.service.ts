@@ -15,11 +15,15 @@ import { AuthDto } from './dto/auth.dto';
 import { v4 as uuid } from 'uuid';
 import * as bcrypt from 'bcrypt';
 import { Image } from '../image/models/image.model';
+import { UpdateRoleDto } from './dto/update-role.dto';
+import { RoleService } from '../role/role.service';
+import { Role } from '../role/models/role.model';
 
 @Injectable()
 export class TeacherService {
   constructor(
     @InjectModel(Teacher) private teacherRepository: typeof Teacher,
+    private readonly roleService: RoleService,
     private readonly imageService: ImageService,
     private readonly jwtService: JwtService,
   ) {}
@@ -61,6 +65,7 @@ export class TeacherService {
     authHeader: string,
   ) {
     await this.isSuperAdmin(authHeader);
+    await this.roleService.findOne(createTeacherDto.role_id);
     const uploadedImages = await this.imageService.create(images);
     const teacherByLogin = await this.getTeacherByLogin(createTeacherDto.login);
     if (teacherByLogin) {
@@ -79,22 +84,22 @@ export class TeacherService {
   async findAll(authHeader: string) {
     await this.isAdmin(authHeader);
     return this.teacherRepository.findAll({
-      attributes: ['id', 'full_name', 'email', 'phone', 'telegram', 'image_id'],
+      attributes: [
+        'id',
+        'full_name',
+        'email',
+        'phone',
+        'telegram',
+        'role_id',
+        'image_id',
+      ],
       include: [Image],
     });
   }
 
   async findOne(id: string, authHeader: string) {
     await this.isUserSelf(id, authHeader);
-    const teacher = await this.teacherRepository.findOne({
-      where: { id },
-      attributes: ['id', 'full_name', 'email', 'phone', 'telegram', 'image_id'],
-      include: [Image],
-    });
-    if (!teacher) {
-      throw new HttpException('Teacher not found', HttpStatus.NOT_FOUND);
-    }
-    return teacher;
+    return this.getOne(id);
   }
 
   async update(
@@ -135,6 +140,18 @@ export class TeacherService {
       );
     }
     await this.teacherRepository.update(updateTeacherDto, { where: { id } });
+    return this.getOne(id);
+  }
+
+  async updateRole(
+    id: string,
+    updateRoleDto: UpdateRoleDto,
+    authHeader: string,
+  ) {
+    await this.isSuperAdmin(authHeader);
+    await this.getOne(id);
+    await this.roleService.findOne(updateRoleDto.role_id);
+    await this.teacherRepository.update(updateRoleDto, { where: { id } });
     return this.getOne(id);
   }
 
@@ -192,9 +209,10 @@ export class TeacherService {
         'telegram',
         'login',
         'hashed_password',
+        'role_id',
         'image_id',
       ],
-      include: [Image],
+      include: [Role, Image],
     });
     return teacher;
   }
@@ -202,8 +220,16 @@ export class TeacherService {
   async getOne(id: string) {
     const teacher = await this.teacherRepository.findOne({
       where: { id },
-      attributes: ['id', 'full_name', 'email', 'phone', 'telegram', 'image_id'],
-      include: [Image],
+      attributes: [
+        'id',
+        'full_name',
+        'email',
+        'phone',
+        'telegram',
+        'role_id',
+        'image_id',
+      ],
+      include: [Role, Image],
     });
     if (!teacher) {
       throw new HttpException('Teacher not found', HttpStatus.NOT_FOUND);

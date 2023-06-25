@@ -1,5 +1,7 @@
 import { Column, DataType, Model, Table, HasMany } from 'sequelize-typescript';
 import { Admin } from '../../admin/models/admin.model';
+import { Student } from '../../student/models/student.model';
+import { Teacher } from '../../teacher/models/teacher.model';
 
 interface RoleAttrs {
   id: string;
@@ -27,4 +29,10 @@ export class Role extends Model<Role, RoleAttrs> {
 
   @HasMany(() => Admin)
   admin: Admin;
+
+  @HasMany(() => Student)
+  student: Student;
+
+  @HasMany(() => Teacher)
+  teacher: Teacher;
 }

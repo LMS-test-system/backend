@@ -10,6 +10,7 @@ import {
 import { Image } from '../../image/models/image.model';
 import { Group } from '../../group/models/group.model';
 import { Result } from '../../result/models/result.model';
+import { Role } from '../../role/models/role.model';
 
 interface StudentAttrs {
   id: string;
@@ -21,6 +22,7 @@ interface StudentAttrs {
   hashed_password: string;
   hashed_refresh_token: string;
   group_id: string;
+  role_id: string;
   image_id: string;
 }
 
@@ -73,6 +75,12 @@ export class Student extends Model<Student, StudentAttrs> {
   })
   group_id: string;
 
+  @ForeignKey(() => Role)
+  @Column({
+    type: DataType.STRING,
+  })
+  role_id: string;
+
   @ForeignKey(() => Image)
   @Column({
     type: DataType.STRING,
@@ -81,6 +89,9 @@ export class Student extends Model<Student, StudentAttrs> {
 
   @BelongsTo(() => Group)
   group: Group;
+
+  @BelongsTo(() => Role)
+  role: Role;
 
   @BelongsTo(() => Image)
   image: Image;

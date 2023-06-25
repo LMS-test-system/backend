@@ -100,7 +100,7 @@ export class AdminService {
     images: Express.Multer.File[],
     authHeader: string,
   ) {
-    // await this.isSuperAdmin(authHeader);
+    await this.isSuperAdmin(authHeader);
     await this.roleService.findOne(createAdminDto.role_id);
     const uploadedImages = await this.imageService.create(images);
     const adminByLogin = await this.getAdminByLogin(createAdminDto.login);
@@ -135,23 +135,7 @@ export class AdminService {
 
   async findOne(id: string, authHeader: string) {
     await this.isUserSelf(id, authHeader);
-    const admin = await this.adminRepository.findOne({
-      where: { id },
-      attributes: [
-        'id',
-        'full_name',
-        'email',
-        'phone',
-        'telegram',
-        'role_id',
-        'image_id',
-      ],
-      include: [Role, Image],
-    });
-    if (!admin) {
-      throw new HttpException('Admin not found', HttpStatus.NOT_FOUND);
-    }
-    return admin;
+    return this.getOne(id);
   }
 
   async update(

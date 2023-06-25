@@ -9,6 +9,7 @@ import {
 } from 'sequelize-typescript';
 import { Image } from '../../image/models/image.model';
 import { TeacherSubject } from '../../teacher-subject/models/teacher-subject.model';
+import { Role } from '../../role/models/role.model';
 
 interface TeacherAttrs {
   id: string;
@@ -19,6 +20,7 @@ interface TeacherAttrs {
   login: string;
   hashed_password: string;
   hashed_refresh_token: string;
+  role_id: string;
   image_id: string;
 }
 
@@ -65,11 +67,20 @@ export class Teacher extends Model<Teacher, TeacherAttrs> {
   })
   hashed_refresh_token: string;
 
+  @ForeignKey(() => Role)
+  @Column({
+    type: DataType.STRING,
+  })
+  role_id: string;
+
   @ForeignKey(() => Image)
   @Column({
     type: DataType.STRING,
   })
   image_id: string;
+
+  @BelongsTo(() => Role)
+  role: Role;
 
   @BelongsTo(() => Image)
   image: Image;

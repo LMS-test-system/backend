@@ -16,6 +16,7 @@ import { UpdateStudentDto } from './dto/update-student.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { AuthDto } from './dto/auth.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
+import { UpdateRoleDto } from './dto/update-role.dto';
 
 @Controller('student')
 export class StudentController {
@@ -67,6 +68,15 @@ export class StudentController {
     @Headers('Authorization') authHeader: string,
   ) {
     return this.studentService.updateGroup(id, updateGroupDto, authHeader);
+  }
+
+  @Patch('role/:id')
+  async updateRole(
+    @Param('id') id: string,
+    @Body() updateRoleDto: UpdateRoleDto,
+    @Headers('Authorization') authHeader: string,
+  ) {
+    return this.studentService.updateRole(id, updateRoleDto, authHeader);
   }
 
   @Delete(':id')
