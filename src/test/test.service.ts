@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateTestDto } from './dto/create-test.dto';
 import { UpdateTestDto } from './dto/update-test.dto';
 import { InjectModel } from '@nestjs/sequelize';
@@ -8,6 +13,8 @@ import { v4 as uuid } from 'uuid';
 import { Subject } from '../subject/models/subject.model';
 import { Question } from '../question/models/question.model';
 import { JwtService } from '@nestjs/jwt';
+import { Image } from '../image/models/image.model';
+import { Answer } from '../answer/models/answer.model';
 
 @Injectable()
 export class TestService {
@@ -38,28 +45,29 @@ export class TestService {
         'createdAt',
         'subject_id',
       ],
-      include: [Subject, Question],
+      include: [
+        {
+          model: Subject,
+          attributes: ['id', 'name', 'image_id'],
+          include: [{ model: Image, attributes: ['id', 'file_name'] }],
+        },
+        {
+          model: Question,
+          attributes: ['id', 'question', 'is_multiple_answer', 'test_id'],
+          include: [
+            {
+              model: Answer,
+              attributes: ['id', 'answer', 'is_right', 'question_id'],
+            },
+          ],
+        },
+      ],
     });
   }
 
   async findOne(id: string, authHeader: string) {
     await this.isAdmin(authHeader);
-    const test = await this.testRepository.findOne({
-      where: { id },
-      attributes: [
-        'id',
-        'name',
-        'type',
-        'time_limit',
-        'createdAt',
-        'subject_id',
-      ],
-      include: [Subject, Question],
-    });
-    if (!test) {
-      throw new HttpException('Test not found', HttpStatus.NOT_FOUND);
-    }
-    return test;
+    return this.getOne(id);
   }
 
   async update(id: string, updateTestDto: UpdateTestDto, authHeader: string) {
@@ -90,7 +98,23 @@ export class TestService {
         'createdAt',
         'subject_id',
       ],
-      include: [Subject, Question],
+      include: [
+        {
+          model: Subject,
+          attributes: ['id', 'name', 'image_id'],
+          include: [{ model: Image, attributes: ['id', 'file_name'] }],
+        },
+        {
+          model: Question,
+          attributes: ['id', 'question', 'is_multiple_answer', 'test_id'],
+          include: [
+            {
+              model: Answer,
+              attributes: ['id', 'answer', 'is_right', 'question_id'],
+            },
+          ],
+        },
+      ],
     });
     if (!test) {
       throw new HttpException('Test not found', HttpStatus.NOT_FOUND);
