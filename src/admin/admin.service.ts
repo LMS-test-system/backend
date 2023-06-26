@@ -90,7 +90,7 @@ export class AdminService {
     const admin = await this.getOne(adminByLogin.id);
     const response = {
       token: tokens.access_token,
-      admin,
+      staff: admin,
     };
     return response;
   }

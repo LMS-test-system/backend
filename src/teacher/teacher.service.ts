@@ -54,7 +54,7 @@ export class TeacherService {
     const teacher = await this.getOne(teacherByLogin.id);
     const response = {
       token: tokens.access_token,
-      teacher,
+      staff: teacher,
     };
     return response;
   }

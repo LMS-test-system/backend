@@ -58,7 +58,7 @@ export class StudentService {
     const student = await this.getOne(studentByLogin.id);
     const response = {
       token: tokens.access_token,
-      student,
+      staff: student,
     };
     return response;
   }
