@@ -35,7 +35,7 @@ export class TestService {
   }
 
   async findAll(authHeader: string) {
-    await this.isAdmin(authHeader);
+    // await this.isAdmin(authHeader);
     return this.testRepository.findAll({
       attributes: [
         'id',
@@ -66,7 +66,7 @@ export class TestService {
   }
 
   async findOne(id: string, authHeader: string) {
-    await this.isAdmin(authHeader);
+    // await this.isAdmin(authHeader);
     return this.getOne(id);
   }
 
