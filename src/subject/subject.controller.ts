@@ -23,10 +23,10 @@ export class SubjectController {
   @UseInterceptors(FilesInterceptor('images'))
   async create(
     @Body() createSubjectDto: CreateSubjectDto,
+    @UploadedFiles() images: Express.Multer.File[],
     @Headers('Authorization') authHeader: string,
-    @UploadedFiles() images?: Express.Multer.File[],
   ) {
-    return this.subjectService.create(createSubjectDto,  authHeader, images);
+    return this.subjectService.create(createSubjectDto, images, authHeader);
   }
 
   @Get()
@@ -47,10 +47,10 @@ export class SubjectController {
   async update(
     @Param('id') id: string,
     @Body() updateSubjectDto: UpdateSubjectDto,
+    @UploadedFiles() images: Express.Multer.File[],
     @Headers('Authorization') authHeader: string,
-    @UploadedFiles() images?: Express.Multer.File[],
   ) {
-    return this.subjectService.update(id, updateSubjectDto,  authHeader, images);
+    return this.subjectService.update(id, updateSubjectDto, images, authHeader);
   }
 
   @Delete(':id')

@@ -18,8 +18,8 @@ export class SubjectService {
 
   async create(
     createSubjectDto: CreateSubjectDto,
+    images: Express.Multer.File[],
     authHeader: string,
-    images?: Express.Multer.File[],
   ) {
     await this.isSuperAdmin(authHeader);
     const uploadedImages = await this.imageService.create(images);
@@ -55,8 +55,8 @@ export class SubjectService {
   async update(
     id: string,
     updateSubjectDto: UpdateSubjectDto,
+    images: Express.Multer.File[],
     authHeader: string,
-    images?: Express.Multer.File[]
   ) {
     await this.isSuperAdmin(authHeader);
     const subject = await this.getOne(id);
