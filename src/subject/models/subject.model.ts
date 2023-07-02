@@ -10,6 +10,7 @@ import {
 import { Image } from '../../image/models/image.model';
 import { TeacherSubject } from '../../teacher-subject/models/teacher-subject.model';
 import { Test } from '../../test/models/test.model';
+import { GroupSubject } from '../../group-subject/models/group-subject.model';
 
 interface SubjectAttrs {
   id: string;
@@ -41,6 +42,9 @@ export class Subject extends Model<Subject, SubjectAttrs> {
 
   @HasMany(() => TeacherSubject)
   teacherSubject: TeacherSubject;
+
+  @HasMany(() => GroupSubject)
+  groupSubject: GroupSubject;
 
   @HasMany(() => Test)
   test: Test;

@@ -9,6 +9,7 @@ import {
 } from 'sequelize-typescript';
 import { Image } from '../../image/models/image.model';
 import { Student } from '../../student/models/student.model';
+import { GroupSubject } from '../../group-subject/models/group-subject.model';
 
 interface GroupAttrs {
   id: string;
@@ -40,4 +41,7 @@ export class Group extends Model<Group, GroupAttrs> {
 
   @HasMany(() => Student)
   student: Student;
+
+  @HasMany(() => GroupSubject)
+  groupSubject: GroupSubject;
 }

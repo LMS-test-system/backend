@@ -31,6 +31,8 @@ import { ResultAnswerModule } from './result_answer/result_answer.module';
 import { Result } from './result/models/result.model';
 import { ResultQuestion } from './result_question/models/result_question.model';
 import { ResultAnswer } from './result_answer/models/result_answer.model';
+import { GroupSubjectModule } from './group-subject/group-subject.module';
+import { GroupSubject } from './group-subject/models/group-subject.model';
 
 @Module({
   imports: [
@@ -63,6 +65,7 @@ import { ResultAnswer } from './result_answer/models/result_answer.model';
         Result,
         ResultQuestion,
         ResultAnswer,
+        GroupSubject,
       ],
       autoLoadModels: true,
       logging: false,
@@ -81,6 +84,7 @@ import { ResultAnswer } from './result_answer/models/result_answer.model';
     ResultModule,
     ResultQuestionModule,
     ResultAnswerModule,
+    GroupSubjectModule,
   ],
   controllers: [],
   providers: [],
