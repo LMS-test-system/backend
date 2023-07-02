@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
 import { Group } from './models/group.model';
@@ -7,6 +12,30 @@ import { ImageService } from '../image/image.service';
 import { Image } from '../image/models/image.model';
 import { v4 as uuid } from 'uuid';
 import { JwtService } from '@nestjs/jwt';
+import { GroupSubject } from '../group-subject/models/group-subject.model';
+import { Subject } from '../subject/models/subject.model';
+
+const commonInclude = [
+  {
+    model: Image,
+    attributes: ['id', 'file_name'],
+  },
+  {
+    model: GroupSubject,
+    include: [
+      {
+        model: Subject,
+        attributes: ['id', 'name', 'image_id'],
+        include: [
+          {
+            model: Image,
+            attributes: ['id', 'file_name'],
+          },
+        ],
+      },
+    ],
+  },
+];
 
 @Injectable()
 export class GroupService {
@@ -35,21 +64,13 @@ export class GroupService {
     await this.isAdmin(authHeader);
     return this.groupRepository.findAll({
       attributes: ['id', 'name', 'image_id'],
-      include: [Image],
+      include: commonInclude,
     });
   }
 
   async findOne(id: string, authHeader: string) {
     await this.isAdmin(authHeader);
-    const group = await this.groupRepository.findOne({
-      where: { id },
-      attributes: ['id', 'name', 'image_id'],
-      include: [Image],
-    });
-    if (!group) {
-      throw new HttpException('Group not found', HttpStatus.NOT_FOUND);
-    }
-    return group;
+    return this.getOne(id);
   }
 
   async update(
@@ -92,7 +113,7 @@ export class GroupService {
     const group = await this.groupRepository.findOne({
       where: { id },
       attributes: ['id', 'name', 'image_id'],
-      include: [Image],
+      include: commonInclude,
     });
     if (!group) {
       throw new HttpException('Group not found', HttpStatus.NOT_FOUND);
