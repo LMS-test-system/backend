@@ -99,7 +99,26 @@ export class StudentService {
         'role_id',
         'image_id',
       ],
-      include: [Group, Role, Image],
+      include: [
+        {
+          model: Group,
+          attributes: ['id', 'name', 'image_id'],
+          include: [
+            {
+              model: Image,
+              attributes: ['id', 'file_name'],
+            },
+          ],
+        },
+        {
+          model: Role,
+          attributes: ['id', 'name', 'description'],
+        },
+        {
+          model: Image,
+          attributes: ['id', 'file_name'],
+        },
+      ],
     });
   }
 
@@ -231,7 +250,26 @@ export class StudentService {
         'role_id',
         'image_id',
       ],
-      include: [Group, Role, Image],
+      include: [
+        {
+          model: Group,
+          attributes: ['id', 'name', 'image_id'],
+          include: [
+            {
+              model: Image,
+              attributes: ['id', 'file_name'],
+            },
+          ],
+        },
+        {
+          model: Role,
+          attributes: ['id', 'name', 'description'],
+        },
+        {
+          model: Image,
+          attributes: ['id', 'file_name'],
+        },
+      ],
     });
     return student;
   }
@@ -249,7 +287,26 @@ export class StudentService {
         'role_id',
         'image_id',
       ],
-      include: [Group, Role, Image],
+      include: [
+        {
+          model: Group,
+          attributes: ['id', 'name', 'image_id'],
+          include: [
+            {
+              model: Image,
+              attributes: ['id', 'file_name'],
+            },
+          ],
+        },
+        {
+          model: Role,
+          attributes: ['id', 'name', 'description'],
+        },
+        {
+          model: Image,
+          attributes: ['id', 'file_name'],
+        },
+      ],
     });
     if (!student) {
       throw new HttpException('Student not found', HttpStatus.NOT_FOUND);
