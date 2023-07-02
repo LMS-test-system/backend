@@ -66,15 +66,15 @@ const commonInclude = [
             attributes: ['id', 'question', 'is_multiple_answer', 'test_id'],
             include: [],
           },
-        ],
-      },
-      {
-        model: ResultAnswer,
-        attributes: ['id', 'result_question_id', 'answer_id'],
-        include: [
           {
-            model: Answer,
-            attributes: ['id', 'answer', 'is_right', 'question_id'],
+            model: ResultAnswer,
+            attributes: ['id', 'result_question_id', 'answer_id'],
+            include: [
+              {
+                model: Answer,
+                attributes: ['id', 'answer', 'is_right', 'question_id'],
+              },
+            ],
           },
         ],
       },
