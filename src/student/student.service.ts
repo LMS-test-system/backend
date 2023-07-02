@@ -21,6 +21,84 @@ import { UpdateGroupDto } from './dto/update-group.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { RoleService } from '../role/role.service';
 import { Role } from '../role/models/role.model';
+import { Result } from '../result/models/result.model';
+import { Test } from '../test/models/test.model';
+import { Subject } from '../subject/models/subject.model';
+import { ResultQuestion } from '../result_question/models/result_question.model';
+import { Question } from '../question/models/question.model';
+import { ResultAnswer } from '../result_answer/models/result_answer.model';
+import { Answer } from '../answer/models/answer.model';
+
+const commonInclude = [
+  {
+    model: Result,
+    attributes: ['id', 'time_spent', 'createdAt', 'student_id', 'test_id'],
+    include: [
+      {
+        model: Test,
+        attributes: [
+          'id',
+          'name',
+          'type',
+          'time_limit',
+          'createdAt',
+          'subject_id',
+        ],
+        include: [
+          {
+            model: Subject,
+            attributes: ['id', 'name', 'image_id'],
+            include: [
+              {
+                model: Image,
+                attributes: ['id', 'file_name'],
+              },
+            ],
+          },
+        ],
+      },
+      {
+        model: ResultQuestion,
+        attributes: ['id', 'is_right', 'result_id', 'question_id'],
+        include: [
+          {
+            model: Question,
+            attributes: ['id', 'question', 'is_multiple_answer', 'test_id'],
+            include: [],
+          },
+        ],
+      },
+      {
+        model: ResultAnswer,
+        attributes: ['id', 'result_question_id', 'answer_id'],
+        include: [
+          {
+            model: Answer,
+            attributes: ['id', 'answer', 'is_right', 'question_id'],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    model: Group,
+    attributes: ['id', 'name', 'image_id'],
+    include: [
+      {
+        model: Image,
+        attributes: ['id', 'file_name'],
+      },
+    ],
+  },
+  {
+    model: Role,
+    attributes: ['id', 'name', 'description'],
+  },
+  {
+    model: Image,
+    attributes: ['id', 'file_name'],
+  },
+];
 
 @Injectable()
 export class StudentService {
@@ -99,26 +177,7 @@ export class StudentService {
         'role_id',
         'image_id',
       ],
-      include: [
-        {
-          model: Group,
-          attributes: ['id', 'name', 'image_id'],
-          include: [
-            {
-              model: Image,
-              attributes: ['id', 'file_name'],
-            },
-          ],
-        },
-        {
-          model: Role,
-          attributes: ['id', 'name', 'description'],
-        },
-        {
-          model: Image,
-          attributes: ['id', 'file_name'],
-        },
-      ],
+      include: commonInclude,
     });
   }
 
@@ -250,26 +309,7 @@ export class StudentService {
         'role_id',
         'image_id',
       ],
-      include: [
-        {
-          model: Group,
-          attributes: ['id', 'name', 'image_id'],
-          include: [
-            {
-              model: Image,
-              attributes: ['id', 'file_name'],
-            },
-          ],
-        },
-        {
-          model: Role,
-          attributes: ['id', 'name', 'description'],
-        },
-        {
-          model: Image,
-          attributes: ['id', 'file_name'],
-        },
-      ],
+      include: commonInclude,
     });
     return student;
   }
@@ -287,26 +327,7 @@ export class StudentService {
         'role_id',
         'image_id',
       ],
-      include: [
-        {
-          model: Group,
-          attributes: ['id', 'name', 'image_id'],
-          include: [
-            {
-              model: Image,
-              attributes: ['id', 'file_name'],
-            },
-          ],
-        },
-        {
-          model: Role,
-          attributes: ['id', 'name', 'description'],
-        },
-        {
-          model: Image,
-          attributes: ['id', 'file_name'],
-        },
-      ],
+      include: commonInclude,
     });
     if (!student) {
       throw new HttpException('Student not found', HttpStatus.NOT_FOUND);
