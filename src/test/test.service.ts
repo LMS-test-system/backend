@@ -113,26 +113,26 @@ export class TestService {
               model: Image,
               attributes: ['id', 'file_name'],
             },
-            {
-              model: GroupSubject,
-              attributes: ['id'],
-              include: [
-                {
-                  model: Group,
-                  attributes: ['id', 'name', 'image_id'],
-                  include: [
-                    {
-                      model: Image,
-                      attributes: ['id', 'file_name'],
-                    },
-                    {
-                      model: Student,
-                      attributes: ['id', 'full_name'],
-                    },
-                  ],
-                },
-              ],
-            },
+            // {
+            //   model: GroupSubject,
+            //   attributes: ['id'],
+            //   include: [
+            //     {
+            //       model: Group,
+            //       attributes: ['id', 'name', 'image_id'],
+            //       include: [
+            //         {
+            //           model: Image,
+            //           attributes: ['id', 'file_name'],
+            //         },
+            //         {
+            //           model: Student,
+            //           attributes: ['id', 'full_name'],
+            //         },
+            //       ],
+            //     },
+            //   ],
+            // },
           ],
         },
         {
