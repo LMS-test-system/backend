@@ -19,6 +19,8 @@ import { Result } from '../result/models/result.model';
 import { Student } from '../student/models/student.model';
 import { ResultQuestion } from '../result_question/models/result_question.model';
 import { ResultAnswer } from '../result_answer/models/result_answer.model';
+import { GroupSubject } from '../group-subject/models/group-subject.model';
+import { Group } from '../group/models/group.model';
 
 @Injectable()
 export class TestService {
@@ -110,6 +112,26 @@ export class TestService {
             {
               model: Image,
               attributes: ['id', 'file_name'],
+            },
+            {
+              model: GroupSubject,
+              attributes: ['id'],
+              include: [
+                {
+                  model: Group,
+                  attributes: ['id', 'name', 'image_id'],
+                  include: [
+                    {
+                      model: Image,
+                      attributes: ['id', 'file_name'],
+                    },
+                    {
+                      model: Student,
+                      attributes: ['id', 'full_name'],
+                    },
+                  ],
+                },
+              ],
             },
           ],
         },
