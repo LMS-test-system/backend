@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateSubjectDto } from './dto/create-subject.dto';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { v4 as uuid } from 'uuid';
@@ -7,6 +12,18 @@ import { Subject } from './models/subject.model';
 import { ImageService } from '../image/image.service';
 import { Image } from '../image/models/image.model';
 import { JwtService } from '@nestjs/jwt';
+import { Test } from '../test/models/test.model';
+
+const commonInclude = [
+  {
+    model: Image,
+    attributes: ['id', 'file_name'],
+  },
+  {
+    model: Test,
+    attributes: ['id', 'name', 'type', 'time_limit', 'createdAt', 'subject_id'],
+  },
+];
 
 @Injectable()
 export class SubjectService {
@@ -35,21 +52,13 @@ export class SubjectService {
     await this.isAdmin(authHeader);
     return this.subjectRepository.findAll({
       attributes: ['id', 'name', 'image_id'],
-      include: [Image],
+      include: commonInclude,
     });
   }
 
   async findOne(id: string, authHeader: string) {
     await this.isAdmin(authHeader);
-    const subject = await this.subjectRepository.findOne({
-      where: { id },
-      attributes: ['id', 'name', 'image_id'],
-      include: [Image],
-    });
-    if (!subject) {
-      throw new HttpException('Subject not found', HttpStatus.NOT_FOUND);
-    }
-    return subject;
+    return this.getOne(id);
   }
 
   async update(
@@ -92,7 +101,7 @@ export class SubjectService {
     const subject = await this.subjectRepository.findOne({
       where: { id },
       attributes: ['id', 'name', 'image_id'],
-      include: [Image],
+      include: commonInclude,
     });
     if (!subject) {
       throw new HttpException('Subject not found', HttpStatus.NOT_FOUND);

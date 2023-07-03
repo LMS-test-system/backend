@@ -22,6 +22,7 @@ const commonInclude = [
   },
   {
     model: GroupSubject,
+    attributes: ['subject_id'],
     include: [
       {
         model: Subject,
