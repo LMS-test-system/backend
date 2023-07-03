@@ -20,65 +20,6 @@ import { Student } from '../student/models/student.model';
 import { ResultQuestion } from '../result_question/models/result_question.model';
 import { ResultAnswer } from '../result_answer/models/result_answer.model';
 
-const commonInclude = [
-  {
-    model: Subject,
-    attributes: ['id', 'name', 'image_id'],
-    include: [
-      {
-        model: Image,
-        attributes: ['id', 'file_name'],
-      },
-    ],
-  },
-  {
-    model: Question,
-    attributes: ['id', 'question', 'is_multiple_answer', 'test_id'],
-    include: [
-      {
-        model: Answer,
-        attributes: ['id', 'answer', 'is_right', 'question_id'],
-      },
-    ],
-  },
-  {
-    model: Result,
-    attributes: ['id', 'time_spent', 'createdAt', 'student_id', 'test_id'],
-    include: [
-      {
-        model: Student,
-        attributes: ['id', 'full_name', 'image_id'],
-        include: [
-          {
-            model: Image,
-            attributes: ['id', 'file_name'],
-          },
-        ],
-      },
-      {
-        model: ResultQuestion,
-        attributes: ['id', 'is_right', 'result_id', 'question_id'],
-        include: [
-          {
-            model: Question,
-            attributes: ['id', 'question', 'is_multiple_answer', 'test_id'],
-          },
-          {
-            model: ResultAnswer,
-            attributes: ['id', 'result_question_id', 'answer_id'],
-            include: [
-              {
-                model: Answer,
-                attributes: ['id', 'answer', 'is_right', 'question_id'],
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  },
-];
-
 @Injectable()
 export class TestService {
   constructor(
@@ -108,7 +49,23 @@ export class TestService {
         'createdAt',
         'subject_id',
       ],
-      include: [],
+      include: [
+        {
+          model: Subject,
+          attributes: ['id', 'name', 'image_id'],
+          include: [{ model: Image, attributes: ['id', 'file_name'] }],
+        },
+        {
+          model: Question,
+          attributes: ['id', 'question', 'is_multiple_answer', 'test_id'],
+          include: [
+            {
+              model: Answer,
+              attributes: ['id', 'answer', 'is_right', 'question_id'],
+            },
+          ],
+        },
+      ],
     });
   }
 
