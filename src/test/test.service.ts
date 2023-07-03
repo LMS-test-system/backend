@@ -55,7 +55,12 @@ export class TestService {
         {
           model: Subject,
           attributes: ['id', 'name', 'image_id'],
-          include: [{ model: Image, attributes: ['id', 'file_name'] }],
+          include: [
+            {
+              model: Image,
+              attributes: ['id', 'file_name'],
+            },
+          ],
         },
         {
           model: Question,
@@ -132,6 +137,16 @@ export class TestService {
                   ],
                 },
               ],
+            },
+          ],
+        },
+        {
+          model: Question,
+          attributes: ['id', 'question', 'is_multiple_answer', 'test_id'],
+          include: [
+            {
+              model: Answer,
+              attributes: ['id', 'answer', 'is_right', 'question_id'],
             },
           ],
         },
