@@ -108,7 +108,7 @@ export class TestService {
         'createdAt',
         'subject_id',
       ],
-      include: commonInclude,
+      include: [],
     });
   }
 
@@ -145,7 +145,7 @@ export class TestService {
         'createdAt',
         'subject_id',
       ],
-      include: commonInclude,
+      include: [],
     });
     if (!test) {
       throw new HttpException('Test not found', HttpStatus.NOT_FOUND);
