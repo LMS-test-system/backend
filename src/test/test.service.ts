@@ -145,7 +145,65 @@ export class TestService {
         'createdAt',
         'subject_id',
       ],
-      include: [],
+      include: [
+        {
+          model: Subject,
+          attributes: ['id', 'name', 'image_id'],
+          include: [
+            {
+              model: Image,
+              attributes: ['id', 'file_name'],
+            },
+          ],
+        },
+        {
+          model: Result,
+          attributes: [
+            'id',
+            'time_spent',
+            'createdAt',
+            'student_id',
+            'test_id',
+          ],
+          include: [
+            {
+              model: Student,
+              attributes: ['id', 'full_name', 'image_id'],
+              include: [
+                {
+                  model: Image,
+                  attributes: ['id', 'file_name'],
+                },
+              ],
+            },
+            {
+              model: ResultQuestion,
+              attributes: ['id', 'is_right', 'result_id', 'question_id'],
+              include: [
+                {
+                  model: Question,
+                  attributes: [
+                    'id',
+                    'question',
+                    'is_multiple_answer',
+                    'test_id',
+                  ],
+                },
+                {
+                  model: ResultAnswer,
+                  attributes: ['id', 'result_question_id', 'answer_id'],
+                  include: [
+                    {
+                      model: Answer,
+                      attributes: ['id', 'answer', 'is_right', 'question_id'],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
     });
     if (!test) {
       throw new HttpException('Test not found', HttpStatus.NOT_FOUND);
