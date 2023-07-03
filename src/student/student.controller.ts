@@ -50,6 +50,14 @@ export class StudentController {
     return this.studentService.findOne(id, authHeader);
   }
 
+  @Get('/full/:id')
+  async findOneFull(
+    @Param('id') id: string,
+    @Headers('Authorization') authHeader: string,
+  ) {
+    return this.studentService.findOneFull(id, authHeader);
+  }
+
   @Patch(':id')
   @UseInterceptors(FilesInterceptor('images'))
   async update(

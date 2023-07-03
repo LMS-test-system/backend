@@ -31,55 +31,6 @@ import { Answer } from '../answer/models/answer.model';
 
 const commonInclude = [
   {
-    model: Result,
-    attributes: ['id', 'time_spent', 'createdAt', 'student_id', 'test_id'],
-    include: [
-      {
-        model: Test,
-        attributes: [
-          'id',
-          'name',
-          'type',
-          'time_limit',
-          'createdAt',
-          'subject_id',
-        ],
-        include: [
-          {
-            model: Subject,
-            attributes: ['id', 'name', 'image_id'],
-            include: [
-              {
-                model: Image,
-                attributes: ['id', 'file_name'],
-              },
-            ],
-          },
-        ],
-      },
-      {
-        model: ResultQuestion,
-        attributes: ['id', 'is_right', 'result_id', 'question_id'],
-        include: [
-          {
-            model: Question,
-            attributes: ['id', 'question', 'is_multiple_answer', 'test_id'],
-          },
-          {
-            model: ResultAnswer,
-            attributes: ['id', 'result_question_id', 'answer_id'],
-            include: [
-              {
-                model: Answer,
-                attributes: ['id', 'answer', 'is_right', 'question_id'],
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  },
-  {
     model: Group,
     attributes: ['id', 'name', 'image_id'],
     include: [
@@ -183,6 +134,11 @@ export class StudentService {
   async findOne(id: string, authHeader: string) {
     await this.isUserSelf(id, authHeader);
     return this.getOne(id);
+  }
+
+  async findOneFull(id: string, authHeader: string) {
+    await this.isUserSelf(id, authHeader);
+    return this.getOneFull(id);
   }
 
   async update(
@@ -327,6 +283,106 @@ export class StudentService {
         'image_id',
       ],
       include: commonInclude,
+    });
+    if (!student) {
+      throw new HttpException('Student not found', HttpStatus.NOT_FOUND);
+    }
+    return student;
+  }
+
+  async getOneFull(id: string) {
+    const student = await this.studentRepository.findOne({
+      where: { id },
+      attributes: [
+        'id',
+        'full_name',
+        'email',
+        'phone',
+        'telegram',
+        'group_id',
+        'role_id',
+        'image_id',
+      ],
+      include: [
+        {
+          model: Result,
+          attributes: [
+            'id',
+            'time_spent',
+            'createdAt',
+            'student_id',
+            'test_id',
+          ],
+          include: [
+            {
+              model: Test,
+              attributes: [
+                'id',
+                'name',
+                'type',
+                'time_limit',
+                'createdAt',
+                'subject_id',
+              ],
+              include: [
+                {
+                  model: Subject,
+                  attributes: ['id', 'name', 'image_id'],
+                  include: [
+                    {
+                      model: Image,
+                      attributes: ['id', 'file_name'],
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              model: ResultQuestion,
+              attributes: ['id', 'is_right', 'result_id', 'question_id'],
+              include: [
+                {
+                  model: Question,
+                  attributes: [
+                    'id',
+                    'question',
+                    'is_multiple_answer',
+                    'test_id',
+                  ],
+                },
+                {
+                  model: ResultAnswer,
+                  attributes: ['id', 'result_question_id', 'answer_id'],
+                  include: [
+                    {
+                      model: Answer,
+                      attributes: ['id', 'answer', 'is_right', 'question_id'],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          model: Group,
+          attributes: ['id', 'name', 'image_id'],
+          include: [
+            {
+              model: Image,
+              attributes: ['id', 'file_name'],
+            },
+          ],
+        },
+        {
+          model: Role,
+          attributes: ['id', 'name', 'description'],
+        },
+        {
+          model: Image,
+          attributes: ['id', 'file_name'],
+        },
+      ],
     });
     if (!student) {
       throw new HttpException('Student not found', HttpStatus.NOT_FOUND);
