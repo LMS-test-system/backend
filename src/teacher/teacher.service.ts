@@ -169,6 +169,7 @@ export class TeacherService {
     const jwtPayload = {
       id: teacher.id,
       login: teacher.login,
+      role: teacher.role,
     };
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(jwtPayload, {

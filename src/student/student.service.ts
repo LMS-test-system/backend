@@ -220,6 +220,7 @@ export class StudentService {
     const jwtPayload = {
       id: student.id,
       login: student.login,
+      role: student.role,
     };
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(jwtPayload, {
