@@ -55,10 +55,12 @@ export class ResultService {
   }
 
   async checkResult(checkResultDto: CheckResultDto) {
-    return this.getResultByStudentId(
-      checkResultDto.student_id,
-      checkResultDto.test_id,
-    );
+    const { student_id, test_id } = checkResultDto;
+
+    await this.studentService.getOne(student_id);
+    await this.testService.getOne(test_id);
+
+    return this.getResultByStudentId(student_id, test_id);
   }
 
   async getOne(id: string) {
