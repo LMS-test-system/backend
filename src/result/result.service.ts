@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { CreateResultDto } from './dto/create-result.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Result } from './models/result.model';
@@ -8,6 +13,7 @@ import { TestService } from '../test/test.service';
 import { Student } from '../student/models/student.model';
 import { Test } from '../test/models/test.model';
 import { ResultQuestion } from '../result_question/models/result_question.model';
+import { CheckResultDto } from './dto/check-result.dto';
 
 @Injectable()
 export class ResultService {
@@ -18,8 +24,12 @@ export class ResultService {
   ) {}
 
   async create(createResultDto: CreateResultDto) {
-    await this.studentService.getOne(createResultDto.student_id);
-    await this.testService.getOne(createResultDto.test_id);
+    const { student_id, test_id } = createResultDto;
+
+    await this.studentService.getOne(student_id);
+    await this.testService.getOne(test_id);
+    await this.getResultByStudentId(student_id, test_id);
+
     const newResult = await this.resultRepository.create({
       id: uuid(),
       ...createResultDto,
@@ -35,6 +45,23 @@ export class ResultService {
   }
 
   async findOne(id: string) {
+    return this.getOne(id);
+  }
+
+  async remove(id: string) {
+    const result = await this.getOne(id);
+    await this.resultRepository.destroy({ where: { id } });
+    return result;
+  }
+
+  async checkResult(checkResultDto: CheckResultDto) {
+    return this.getResultByStudentId(
+      checkResultDto.student_id,
+      checkResultDto.test_id,
+    );
+  }
+
+  async getOne(id: string) {
     const result = await this.resultRepository.findOne({
       where: { id },
       attributes: ['id', 'time_spent', 'createdAt', 'student_id', 'test_id'],
@@ -46,9 +73,14 @@ export class ResultService {
     return result;
   }
 
-  async remove(id: string) {
-    const result = await this.findOne(id);
-    await this.resultRepository.destroy({ where: { id } });
-    return result;
+  async getResultByStudentId(student_id: string, test_id: string) {
+    const result = await this.resultRepository.findOne({
+      where: { student_id, test_id },
+      attributes: ['id', 'time_spent', 'createdAt', 'student_id', 'test_id'],
+    });
+    if (result) {
+      throw new BadRequestException('Reached to Limit!');
+    }
+    return { check: true };
   }
 }

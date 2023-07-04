@@ -1,13 +1,7 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
 import { ResultService } from './result.service';
 import { CreateResultDto } from './dto/create-result.dto';
+import { CheckResultDto } from './dto/check-result.dto';
 
 @Controller('result')
 export class ResultController {
@@ -31,5 +25,10 @@ export class ResultController {
   @Delete(':id')
   async remove(@Param('id') id: string) {
     return this.resultService.remove(id);
+  }
+
+  @Post('/check')
+  async checkResult(@Body() checkResultDto: CheckResultDto) {
+    return this.resultService.checkResult(checkResultDto);
   }
 }
