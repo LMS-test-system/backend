@@ -22,7 +22,7 @@ export class AnswerService {
   ) {}
 
   async create(createAnswerDto: CreateAnswerDto, authHeader: string) {
-    await this.isSuperAdmin(authHeader);
+    await this.isTeacher(authHeader);
     await this.questionService.getOne(createAnswerDto.question_id);
     const newAnswer = await this.answerRepository.create({
       id: uuid(),
@@ -32,7 +32,7 @@ export class AnswerService {
   }
 
   async findAll(authHeader: string) {
-    await this.isAdmin(authHeader);
+    await this.isTeacher(authHeader);
     return this.answerRepository.findAll({
       attributes: ['id', 'answer', 'is_right', 'question_id'],
       include: [Question],
@@ -40,7 +40,7 @@ export class AnswerService {
   }
 
   async findOne(id: string, authHeader: string) {
-    await this.isAdmin(authHeader);
+    await this.isTeacher(authHeader);
     const answer = await this.answerRepository.findOne({
       where: { id },
       attributes: ['id', 'answer', 'is_right', 'question_id'],
@@ -57,7 +57,7 @@ export class AnswerService {
     updateAnswerDto: UpdateAnswerDto,
     authHeader: string,
   ) {
-    await this.isSuperAdmin(authHeader);
+    await this.isTeacher(authHeader);
     await this.getOne(id);
     if (updateAnswerDto.question_id) {
       await this.questionService.getOne(updateAnswerDto.question_id);
@@ -67,7 +67,7 @@ export class AnswerService {
   }
 
   async remove(id: string, authHeader: string) {
-    await this.isSuperAdmin(authHeader);
+    await this.isTeacher(authHeader);
     const answer = await this.getOne(id);
     await this.answerRepository.destroy({ where: { id } });
     return answer;
@@ -107,6 +107,17 @@ export class AnswerService {
   async isAdmin(authHeader: string) {
     const user = await this.verifyAccessToken(authHeader);
     if (user.role !== 'super-admin' && user.role !== 'admin') {
+      throw new UnauthorizedException('Restricted action');
+    }
+  }
+
+  async isTeacher(authHeader: string) {
+    const user = await this.verifyAccessToken(authHeader);
+    if (
+      user.role !== 'super-admin' &&
+      user.role !== 'admin' &&
+      user.role !== 'teacher'
+    ) {
       throw new UnauthorizedException('Restricted action');
     }
   }
