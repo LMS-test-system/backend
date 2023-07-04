@@ -38,7 +38,7 @@ export class SubjectService {
     images: Express.Multer.File[],
     authHeader: string,
   ) {
-    await this.isSuperAdmin(authHeader);
+    await this.isAdmin(authHeader);
     const uploadedImages = await this.imageService.create(images);
     const newSubject = await this.subjectRepository.create({
       id: uuid(),
@@ -49,7 +49,7 @@ export class SubjectService {
   }
 
   async findAll(authHeader: string) {
-    await this.isAdmin(authHeader);
+    await this.isTeacher(authHeader);
     return this.subjectRepository.findAll({
       attributes: ['id', 'name', 'image_id'],
       include: commonInclude,
@@ -57,7 +57,7 @@ export class SubjectService {
   }
 
   async findOne(id: string, authHeader: string) {
-    await this.isAdmin(authHeader);
+    await this.isTeacher(authHeader);
     return this.getOne(id);
   }
 
@@ -67,7 +67,7 @@ export class SubjectService {
     images: Express.Multer.File[],
     authHeader: string,
   ) {
-    await this.isSuperAdmin(authHeader);
+    await this.isAdmin(authHeader);
     const subject = await this.getOne(id);
     if (images.length) {
       if (subject.image_id) {
@@ -88,7 +88,7 @@ export class SubjectService {
   }
 
   async remove(id: string, authHeader: string) {
-    await this.isSuperAdmin(authHeader);
+    await this.isAdmin(authHeader);
     const subject = await this.getOne(id);
     await this.subjectRepository.destroy({ where: { id } });
     if (subject.image_id) {
@@ -131,6 +131,17 @@ export class SubjectService {
   async isAdmin(authHeader: string) {
     const user = await this.verifyAccessToken(authHeader);
     if (user.role !== 'super-admin' && user.role !== 'admin') {
+      throw new UnauthorizedException('Restricted action');
+    }
+  }
+
+  async isTeacher(authHeader: string) {
+    const user = await this.verifyAccessToken(authHeader);
+    if (
+      user.role !== 'super-admin' &&
+      user.role !== 'admin' &&
+      user.role !== 'teacher'
+    ) {
       throw new UnauthorizedException('Restricted action');
     }
   }

@@ -31,7 +31,7 @@ export class TestService {
   ) {}
 
   async create(createTestDto: CreateTestDto, authHeader: string) {
-    await this.isSuperAdmin(authHeader);
+    await this.isTeacher(authHeader);
     await this.subjectService.getOne(createTestDto.subject_id);
     const newTest = await this.testRepository.create({
       id: uuid(),
@@ -41,7 +41,6 @@ export class TestService {
   }
 
   async findAll(authHeader: string) {
-    // await this.isAdmin(authHeader);
     return this.testRepository.findAll({
       attributes: [
         'id',
@@ -77,12 +76,11 @@ export class TestService {
   }
 
   async findOne(id: string, authHeader: string) {
-    // await this.isAdmin(authHeader);
     return this.getOne(id);
   }
 
   async update(id: string, updateTestDto: UpdateTestDto, authHeader: string) {
-    await this.isSuperAdmin(authHeader);
+    await this.isTeacher(authHeader);
     await this.getOne(id);
     if (updateTestDto.subject_id) {
       await this.subjectService.getOne(updateTestDto.subject_id);
@@ -92,7 +90,7 @@ export class TestService {
   }
 
   async remove(id: string, authHeader: string) {
-    await this.isSuperAdmin(authHeader);
+    await this.isTeacher(authHeader);
     const test = await this.getOne(id);
     await this.testRepository.destroy({ where: { id } });
     return test;
@@ -227,6 +225,17 @@ export class TestService {
   async isAdmin(authHeader: string) {
     const user = await this.verifyAccessToken(authHeader);
     if (user.role !== 'super-admin' && user.role !== 'admin') {
+      throw new UnauthorizedException('Restricted action');
+    }
+  }
+
+  async isTeacher(authHeader: string) {
+    const user = await this.verifyAccessToken(authHeader);
+    if (
+      user.role !== 'super-admin' &&
+      user.role !== 'admin' &&
+      user.role !== 'teacher'
+    ) {
       throw new UnauthorizedException('Restricted action');
     }
   }

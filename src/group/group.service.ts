@@ -51,7 +51,7 @@ export class GroupService {
     images: Express.Multer.File[],
     authHeader: string,
   ) {
-    await this.isSuperAdmin(authHeader);
+    await this.isAdmin(authHeader);
     const uploadedImages = await this.imageService.create(images);
     const newGroup = await this.groupRepository.create({
       id: uuid(),
@@ -62,7 +62,7 @@ export class GroupService {
   }
 
   async findAll(authHeader: string) {
-    await this.isAdmin(authHeader);
+    await this.isTeacher(authHeader);
     return this.groupRepository.findAll({
       attributes: ['id', 'name', 'image_id'],
       include: commonInclude,
@@ -70,7 +70,7 @@ export class GroupService {
   }
 
   async findOne(id: string, authHeader: string) {
-    await this.isAdmin(authHeader);
+    await this.isTeacher(authHeader);
     return this.getOne(id);
   }
 
@@ -80,7 +80,7 @@ export class GroupService {
     images: Express.Multer.File[],
     authHeader: string,
   ) {
-    await this.isSuperAdmin(authHeader);
+    await this.isAdmin(authHeader);
     const group = await this.getOne(id);
     if (images.length) {
       if (group.image_id) {
@@ -101,7 +101,7 @@ export class GroupService {
   }
 
   async remove(id: string, authHeader: string) {
-    await this.isSuperAdmin(authHeader);
+    await this.isAdmin(authHeader);
     const group = await this.getOne(id);
     await this.groupRepository.destroy({ where: { id } });
     if (group.image_id) {
@@ -144,6 +144,17 @@ export class GroupService {
   async isAdmin(authHeader: string) {
     const user = await this.verifyAccessToken(authHeader);
     if (user.role !== 'super-admin' && user.role !== 'admin') {
+      throw new UnauthorizedException('Restricted action');
+    }
+  }
+
+  async isTeacher(authHeader: string) {
+    const user = await this.verifyAccessToken(authHeader);
+    if (
+      user.role !== 'super-admin' &&
+      user.role !== 'admin' &&
+      user.role !== 'teacher'
+    ) {
       throw new UnauthorizedException('Restricted action');
     }
   }
