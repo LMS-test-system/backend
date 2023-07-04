@@ -11,7 +11,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Student } from './models/student.model';
 import { ImageService } from '../image/image.service';
 import { v4 as uuid } from 'uuid';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { GroupService } from './../group/group.service';
 import { AuthDto } from './dto/auth.dto';

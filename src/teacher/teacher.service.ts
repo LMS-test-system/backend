@@ -13,7 +13,7 @@ import { ImageService } from '../image/image.service';
 import { JwtService } from '@nestjs/jwt';
 import { AuthDto } from './dto/auth.dto';
 import { v4 as uuid } from 'uuid';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { Image } from '../image/models/image.model';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { RoleService } from '../role/role.service';
