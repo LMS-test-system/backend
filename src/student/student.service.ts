@@ -115,7 +115,7 @@ export class StudentService {
   }
 
   async findAll(authHeader: string) {
-    await this.isAdmin(authHeader);
+    await this.verifyAccessToken(authHeader);
     return this.studentRepository.findAll({
       attributes: [
         'id',

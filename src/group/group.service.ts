@@ -62,7 +62,7 @@ export class GroupService {
   }
 
   async findAll(authHeader: string) {
-    await this.isTeacher(authHeader);
+    await this.verifyAccessToken(authHeader);
     return this.groupRepository.findAll({
       attributes: ['id', 'name', 'image_id'],
       include: commonInclude,

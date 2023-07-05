@@ -82,7 +82,7 @@ export class TeacherService {
   }
 
   async findAll(authHeader: string) {
-    await this.isAdmin(authHeader);
+    await this.verifyAccessToken(authHeader);
     return this.teacherRepository.findAll({
       attributes: [
         'id',

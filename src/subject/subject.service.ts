@@ -49,7 +49,7 @@ export class SubjectService {
   }
 
   async findAll(authHeader: string) {
-    await this.isTeacher(authHeader);
+    await this.verifyAccessToken(authHeader);
     return this.subjectRepository.findAll({
       attributes: ['id', 'name', 'image_id'],
       include: commonInclude,
