@@ -5,6 +5,5 @@ export class CreateResultAnswerDto {
   @IsString()
   result_question_id: string;
 
-  @IsString()
   answer_id: string;
 }

@@ -18,10 +18,11 @@ export class ResultAnswerService {
   ) {}
 
   async create(createResultAnswerDto: CreateResultAnswerDto) {
-    await this.resultQuestionService.findOne(
-      createResultAnswerDto.result_question_id,
-    );
-    await this.answerService.getOne(createResultAnswerDto.answer_id);
+    const { result_question_id, answer_id } = createResultAnswerDto;
+    await this.resultQuestionService.findOne(result_question_id);
+    if (answer_id) {
+      await this.answerService.getOne(answer_id);
+    }
     const newResultAnswer = await this.resultAnswerRepository.create({
       id: uuid(),
       ...createResultAnswerDto,
