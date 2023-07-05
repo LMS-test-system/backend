@@ -249,7 +249,7 @@ export class TestService {
   async checkRole() {
     this.answerAttrs =
       this.role !== 'student'
-        ? ['id', 'answer', 'is_right', 'qustion_id']
-        : ['id', 'answer', 'qustion_id'];
+        ? ['id', 'answer', 'is_right', 'question_id']
+        : ['id', 'answer', 'question_id'];
   }
 }
