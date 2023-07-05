@@ -46,7 +46,7 @@ export class Question extends Model<Question, QuestionAttrs> {
   test: Test;
 
   @HasMany(() => Answer)
-  answer: Answer;
+  answer: Answer[];
 
   @HasMany(() => ResultQuestion)
   resultQuestion: ResultQuestion;

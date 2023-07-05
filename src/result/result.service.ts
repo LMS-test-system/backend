@@ -83,13 +83,31 @@ export class ResultService {
   async calculateResult(id: string) {
     const result = await this.getOne(id);
 
-    // for (let i in result.resultQuestion) {
-    //   const question = await this.questionService.getOne(
-    //     result.resultQuestion[i].question_id,
+    for (let i in result.resultQuestion) {
+      const question = await this.questionService.getOne(
+        result.resultQuestion[i].question_id,
+      );
 
+      let is_right = true;
 
-    //   );
-    // }
+      if (question.is_multiple_answer) {
+        const right_answer = question.answer
+          .filter((el) => el.is_right)
+          .map((el) => el.id);
+
+        result.resultQuestion[i].resultAnswer.forEach((el) => {
+          if (!right_answer.includes(el.answer_id)) {
+            is_right = false;
+            return;
+          }
+        });
+      }
+
+      await this.resultQuestionRepository.update(
+        { is_right },
+        { where: { id: result.resultQuestion[i].id } },
+      );
+    }
 
     return { success: true };
   }
