@@ -37,7 +37,7 @@ export class ResultController {
     return this.resultService.calculateResult(id);
   }
 
-  @Delete('/all')
+  @Delete('/delete/all')
   async removeAll() {
     return this.resultService.removeAll();
   }
