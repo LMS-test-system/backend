@@ -90,18 +90,27 @@ export class ResultService {
 
       let is_right = true;
 
-      if (question.is_multiple_answer) {
-        const right_answer = question.answer
-          .filter((el) => el.is_right)
-          .map((el) => el.id);
+      const right_answer = question.answer
+        .filter((el) => el.is_right)
+        .map((el) => el.id);
 
-        result.resultQuestion[i].resultAnswer.forEach((el) => {
-          if (!right_answer.includes(el.answer_id)) {
-            is_right = false;
-            return;
-          }
-        });
-      }
+      const selected_answer = result.resultQuestion[i].resultAnswer.map(
+        (el) => el.answer_id,
+      );
+
+      right_answer.forEach((el) => {
+        if (!selected_answer.includes(el)) {
+          is_right = false;
+          return;
+        }
+      });
+
+      selected_answer.forEach((el) => {
+        if (!right_answer.includes(el)) {
+          is_right = false;
+          return;
+        }
+      });
 
       await this.resultQuestionRepository.update(
         { is_right },
