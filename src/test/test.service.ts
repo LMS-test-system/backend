@@ -24,6 +24,8 @@ import { Group } from '../group/models/group.model';
 
 @Injectable()
 export class TestService {
+  private role: string;
+
   constructor(
     @InjectModel(Test) private testRepository: typeof Test,
     private readonly subjectService: SubjectService,
@@ -67,7 +69,7 @@ export class TestService {
           include: [
             {
               model: Answer,
-              attributes: ['id', 'answer', 'is_right', 'question_id'],
+              attributes: ['id', 'answer', 'question_id'],
             },
           ],
         },
@@ -76,6 +78,7 @@ export class TestService {
   }
 
   async findOne(id: string, authHeader: string) {
+    await this.verifyAccessToken(authHeader);
     return this.getOne(id);
   }
 
@@ -144,7 +147,12 @@ export class TestService {
           include: [
             {
               model: Answer,
-              attributes: ['id', 'answer', 'is_right', 'question_id'],
+              attributes: [
+                'id',
+                'answer',
+                this.role == 'super-admin' ? 'is_right' : null,
+                'question_id',
+              ],
             },
           ],
         },
@@ -187,7 +195,7 @@ export class TestService {
                   include: [
                     {
                       model: Answer,
-                      attributes: ['id', 'answer', 'is_right', 'question_id'],
+                      attributes: ['id', 'answer', 'question_id'],
                     },
                   ],
                 },
@@ -209,6 +217,7 @@ export class TestService {
       const user = await this.jwtService.verify(access_token, {
         secret: process.env.ACCESS_TOKEN_KEY,
       });
+      this.role = user.role;
       return user;
     } catch (error) {
       throw new UnauthorizedException('Invalid token');

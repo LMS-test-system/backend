@@ -31,4 +31,9 @@ export class ResultController {
   async checkResult(@Body() checkResultDto: CheckResultDto) {
     return this.resultService.checkResult(checkResultDto);
   }
+
+  @Get('/calculate/:id')
+  async calculateResult(@Param('id') id: string) {
+    return this.resultService.calculateResult(id);
+  }
 }

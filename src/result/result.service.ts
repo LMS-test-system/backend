@@ -63,6 +63,14 @@ export class ResultService {
     return this.getResultByStudentId(student_id, test_id);
   }
 
+  async calculateResult(id: string) {
+    const result = await this.getOne(id);
+
+    // for(let resultQuestion of result.resultQuestion)
+
+    return { success: true };
+  }
+
   async getOne(id: string) {
     const result = await this.resultRepository.findOne({
       where: { id },

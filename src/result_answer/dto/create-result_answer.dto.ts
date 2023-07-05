@@ -5,7 +5,6 @@ export class CreateResultAnswerDto {
   @IsString()
   result_question_id: string;
 
-  @IsNotEmpty()
   @IsString()
   answer_id: string;
 }
