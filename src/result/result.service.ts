@@ -14,13 +14,20 @@ import { Student } from '../student/models/student.model';
 import { Test } from '../test/models/test.model';
 import { ResultQuestion } from '../result_question/models/result_question.model';
 import { CheckResultDto } from './dto/check-result.dto';
+import { ResultQuestionService } from './../result_question/result_question.service';
+import { QuestionService } from './../question/question.service';
+import { Image } from '../image/models/image.model';
+import { ResultAnswer } from '../result_answer/models/result_answer.model';
 
 @Injectable()
 export class ResultService {
   constructor(
     @InjectModel(Result) private resultRepository: typeof Result,
+    @InjectModel(ResultQuestion)
+    private resultQuestionRepository: typeof ResultQuestion,
     private readonly studentService: StudentService,
     private readonly testService: TestService,
+    private readonly questionService: QuestionService,
   ) {}
 
   async create(createResultDto: CreateResultDto) {
@@ -54,6 +61,16 @@ export class ResultService {
     return result;
   }
 
+  async removeAll() {
+    const result = await this.findAll();
+
+    for (let res of result) {
+      await this.remove(res.id);
+    }
+
+    return this.findAll();
+  }
+
   async checkResult(checkResultDto: CheckResultDto) {
     const { student_id, test_id } = checkResultDto;
 
@@ -66,7 +83,13 @@ export class ResultService {
   async calculateResult(id: string) {
     const result = await this.getOne(id);
 
-    // for(let resultQuestion of result.resultQuestion)
+    // for (let i in result.resultQuestion) {
+    //   const question = await this.questionService.getOne(
+    //     result.resultQuestion[i].question_id,
+
+
+    //   );
+    // }
 
     return { success: true };
   }
@@ -75,7 +98,39 @@ export class ResultService {
     const result = await this.resultRepository.findOne({
       where: { id },
       attributes: ['id', 'time_spent', 'createdAt', 'student_id', 'test_id'],
-      include: [Student, Test, ResultQuestion],
+      include: [
+        {
+          model: Student,
+          attributes: ['id', 'full_name', 'image_id'],
+          include: [
+            {
+              model: Image,
+              attributes: ['id', 'file_name'],
+            },
+          ],
+        },
+        {
+          model: Test,
+          attributes: [
+            'id',
+            'name',
+            'type',
+            'time_limit',
+            'createdAt',
+            'subject_id',
+          ],
+        },
+        {
+          model: ResultQuestion,
+          attributes: ['id', 'is_right', 'result_id', 'question_id'],
+          include: [
+            {
+              model: ResultAnswer,
+              attributes: ['id', 'result_question_id', 'answer_id'],
+            },
+          ],
+        },
+      ],
     });
     if (!result) {
       throw new HttpException('Result not found', HttpStatus.NOT_FOUND);

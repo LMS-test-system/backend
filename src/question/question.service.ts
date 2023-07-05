@@ -36,21 +36,29 @@ export class QuestionService {
     await this.isTeacher(authHeader);
     return this.questionRepository.findAll({
       attributes: ['id', 'question', 'is_multiple_answer', 'test_id'],
-      include: [Test, Answer],
+      include: [
+        {
+          model: Test,
+          attributes: [
+            'id',
+            'name',
+            'type',
+            'time_limit',
+            'createdAt',
+            'subject_id',
+          ],
+        },
+        {
+          model: Answer,
+          attributes: ['id', 'answer', 'is_right', 'question_id'],
+        },
+      ],
     });
   }
 
   async findOne(id: string, authHeader: string) {
     await this.isTeacher(authHeader);
-    const question = await this.questionRepository.findOne({
-      where: { id },
-      attributes: ['id', 'question', 'is_multiple_answer', 'test_id'],
-      include: [Test, Answer],
-    });
-    if (!question) {
-      throw new HttpException('Question not found', HttpStatus.NOT_FOUND);
-    }
-    return question;
+    return this.getOne(id);
   }
 
   async update(
@@ -78,7 +86,23 @@ export class QuestionService {
     const question = await this.questionRepository.findOne({
       where: { id },
       attributes: ['id', 'question', 'is_multiple_answer', 'test_id'],
-      include: [Test, Answer],
+      include: [
+        {
+          model: Test,
+          attributes: [
+            'id',
+            'name',
+            'type',
+            'time_limit',
+            'createdAt',
+            'subject_id',
+          ],
+        },
+        {
+          model: Answer,
+          attributes: ['id', 'answer', 'is_right', 'question_id'],
+        },
+      ],
     });
     if (!question) {
       throw new HttpException('Question not found', HttpStatus.NOT_FOUND);
