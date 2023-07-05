@@ -19,11 +19,15 @@ export class ResultQuestionService {
   ) {}
 
   async create(createResultQuestionDto: CreateResultQuestionDto) {
-    await this.resultService.findOne(createResultQuestionDto.result_id);
-    await this.questionService.getOne(createResultQuestionDto.question_id);
+    const { result_id, question_id } = createResultQuestionDto;
+
+    await this.resultService.findOne(result_id);
+    await this.questionService.getOne(question_id);
+
     const newResultQuestion = await this.resultQuestionRepository.create({
       id: uuid(),
-      ...createResultQuestionDto,
+      result_id,
+      question_id,
     });
     return this.findOne(newResultQuestion.id);
   }
@@ -42,7 +46,10 @@ export class ResultQuestionService {
       include: [Result, Question, ResultAnswer],
     });
     if (!resultQuestion) {
-      throw new HttpException('Result Question not found', HttpStatus.NOT_FOUND);
+      throw new HttpException(
+        'Result Question not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return resultQuestion;
   }
