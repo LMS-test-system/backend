@@ -25,6 +25,7 @@ import { Group } from '../group/models/group.model';
 @Injectable()
 export class TestService {
   private role: string;
+  private answerAttrs: string[];
 
   constructor(
     @InjectModel(Test) private testRepository: typeof Test,
@@ -79,6 +80,7 @@ export class TestService {
 
   async findOne(id: string, authHeader: string) {
     await this.verifyAccessToken(authHeader);
+    await this.checkRole();
     return this.getOne(id);
   }
 
@@ -147,12 +149,7 @@ export class TestService {
           include: [
             {
               model: Answer,
-              attributes: [
-                'id',
-                'answer',
-                this.role == 'super-admin' ? 'is_right' : null,
-                'question_id',
-              ],
+              attributes: this.answerAttrs,
             },
           ],
         },
@@ -247,5 +244,12 @@ export class TestService {
     ) {
       throw new UnauthorizedException('Restricted action');
     }
+  }
+
+  async checkRole() {
+    this.answerAttrs =
+      this.role !== 'student'
+        ? ['id', 'answer', 'is_right', 'qustion_id']
+        : ['id', 'answer', 'qustion_id'];
   }
 }
