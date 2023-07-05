@@ -45,6 +45,15 @@ export class TestService {
 
   async findAll(authHeader: string) {
     return this.testRepository.findAll({
+      order: [
+        [{ model: Question, as: 'question' }, 'createdAt', 'ASC'],
+        [
+          { model: Question, as: 'question' },
+          { model: Answer, as: 'answer' },
+          'createdAt',
+          'ASC',
+        ],
+      ],
       attributes: [
         'id',
         'name',
@@ -81,7 +90,20 @@ export class TestService {
   async findOne(id: string, authHeader: string) {
     await this.verifyAccessToken(authHeader);
     await this.checkRole();
-    return this.getOne(id);
+    const test = await this.getOne(id);
+    if (this.role == 'student') {
+      await this.shuffle(test.question);
+
+      test.question.forEach(async (el) => {
+        await this.shuffle(el.answer);
+      });
+
+      const arr = [[1], [2], [3]];
+      await this.shuffle(arr);
+      console.log(arr);
+    }
+
+    return test;
   }
 
   async update(id: string, updateTestDto: UpdateTestDto, authHeader: string) {
@@ -103,6 +125,15 @@ export class TestService {
 
   async getOne(id: string) {
     const test = await this.testRepository.findOne({
+      order: [
+        [{ model: Question, as: 'question' }, 'createdAt', 'ASC'],
+        [
+          { model: Question, as: 'question' },
+          { model: Answer, as: 'answer' },
+          'createdAt',
+          'ASC',
+        ],
+      ],
       where: { id },
       attributes: [
         'id',
@@ -251,5 +282,24 @@ export class TestService {
       this.role !== 'student'
         ? ['id', 'answer', 'is_right', 'question_id']
         : ['id', 'answer', 'question_id'];
+  }
+
+  async shuffle(array: object[]) {
+    var m = array.length,
+      t,
+      i;
+
+    // While there remain elements to shuffle…
+    while (m) {
+      // Pick a remaining element…
+      i = Math.floor(Math.random() * m--);
+
+      // And swap it with the current element.
+      t = array[m];
+      array[m] = array[i];
+      array[i] = t;
+    }
+
+    return array;
   }
 }

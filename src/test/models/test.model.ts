@@ -52,7 +52,7 @@ export class Test extends Model<Test, TestAttrs> {
   subject: Subject;
 
   @HasMany(() => Question)
-  question: Question;
+  question: Question[];
 
   @HasMany(() => Result)
   result: Result;
