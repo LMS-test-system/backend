@@ -20,8 +20,6 @@ export class CreateStudentDto {
   @IsPhoneNumber()
   phone: string;
 
-  @IsNotEmpty()
-  @IsUrl()
   telegram: string;
 
   @IsNotEmpty()
@@ -29,7 +27,6 @@ export class CreateStudentDto {
   login: string;
 
   @IsNotEmpty()
-  @IsStrongPassword()
   password: string;
 
   @IsNotEmpty()
